@@ -20,38 +20,37 @@ const ThemeContext = createContext<ThemeContextValue>({
   toggleTheme: () => {},
 });
 
-//Implement a helper function to retrieve initial theme
-//default theme "dark"
-
-function getInitialTheme(): Theme {
-  // get theme from localStorage
-  const stored = localStorage.getItem('theme');
-  if (stored === 'light' || stored === 'dark') {
-    return stored;
-  }
-  return 'dark';
-}
+const DEFAULT_THEME: Theme = 'dark';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Initiliza theme using the getInitialTheme function
-  const [theme, setTheme] = useState(getInitialTheme());
+  // Start with the default so server and client render the same markup.
+  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
   console.log('Theme is', theme);
 
-  function toggleTheme() {
-    if (theme == 'dark') {
-      setTheme('light');
-    } else {
-      setTheme('dark');
-    }
-  }
-  //Persist theme changes to localStorage
+  // Runs only in the browser: load the saved theme after mount.
   useEffect(() => {
-    // Update the HTML root element dataset so CSS can react to theme changes
-    localStorage.setItem('theme', theme);
+    const stored = localStorage.getItem('theme');
+    if (stored === 'light' || stored === 'dark') {
+      setThemeState(stored);
+    }
+  }, []);
+
+  useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
   const value = useMemo(() => {
+    // Persist only on explicit changes, so the default never overwrites
+    // the saved value before it has been loaded.
+    function setTheme(next: Theme) {
+      setThemeState(next);
+      localStorage.setItem('theme', next);
+    }
+
+    function toggleTheme() {
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    }
+
     return {
       theme,
       setTheme,
@@ -66,7 +65,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const ctx = useContext(ThemeContext);
-  console.log('CTX -> ', ctx);
   if (!ctx) {
     throw new Error('useTheme must be used within ThemeProvider');
   }

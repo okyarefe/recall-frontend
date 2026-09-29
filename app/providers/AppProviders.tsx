@@ -1,3 +1,5 @@
-export function AppProviders({ children }) {
-  return <>{children}</>;
+import { ThemeProvider } from './ThemeProvider';
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return <ThemeProvider>{children}</ThemeProvider>;
 }

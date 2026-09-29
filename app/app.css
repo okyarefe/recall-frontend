@@ -1,16 +1,117 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-@theme {
+
+/* ---------- Light theme (default) ---------- */
+:root {
+  /* Page & surfaces */
+  --background: #f4f4f5; /* gray page behind the cards */
+  --surface: #ffffff; /* cards, sidebar, header */
+  --surface-muted: #f7f7f8; /* boxes inside cards (e.g. "USD Account") */
+  --border: #ececef;
+
+  /* Text */
+  --foreground: #0a0a0a; /* headings, big numbers */
+  --muted-foreground: #8a8a93; /* labels, decimals like ".88" */
+
+  /* Brand */
+  --primary: #8b5cf6; /* purple: active nav, chart bars */
+  --primary-foreground: #ffffff;
+  --primary-soft: #efe9fe; /* highlighted table row */
+
+  /* Black "New Payment" / "View All" buttons */
+  --inverse: #0a0a0a;
+  --inverse-foreground: #ffffff;
+
+  /* Teal "Earn $100" / "Add New Card" buttons */
+  --accent: #2dd4a7;
+  --accent-foreground: #0a0a0a;
+
+  /* Status */
+  --success: #16a34a; /* "+1.5%" text */
+  --success-soft: #dcfce7; /* "+1.5%" chip background */
+  --danger: #ef4444; /* notification dot */
+
+  /* Charts & decorative */
+  --chart-1: #8b5cf6; /* purple */
+  --chart-2: #fdba74; /* orange */
+  --chart-3: #67e8f9; /* cyan */
+  --chart-4: #f0e44a; /* yellow card */
+
+  color-scheme: light;
+}
+
+/* ---------- Dark theme ---------- */
+[data-theme='dark'] {
+  --background: #0b0b0f;
+  --surface: #16161c;
+  --surface-muted: #1e1e26;
+  --border: #26262f;
+
+  --foreground: #fafafa;
+  --muted-foreground: #8b8b96;
+
+  --primary: #a78bfa;
+  --primary-foreground: #0b0b0f;
+  --primary-soft: #2a2140;
+
+  --inverse: #fafafa;
+  --inverse-foreground: #0a0a0a;
+
+  --accent: #34d3a6;
+  --accent-foreground: #0a0a0a;
+
+  --success: #4ade80;
+  --success-soft: #14301f;
+  --danger: #f87171;
+
+  --chart-1: #a78bfa;
+  --chart-2: #fb923c;
+  --chart-3: #22d3ee;
+  --chart-4: #e5d63a;
+
+  color-scheme: dark;
+}
+
+/* ---------- Turn the variables into Tailwind classes ---------- */
+/* --color-primary → bg-primary, text-primary, border-primary, ... */
+@theme inline {
   --font-sans:
     'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+
+  /* Rounded corners like the cards in the design → rounded-card */
+  --radius-card: 1rem;
 }
 
+/* ---------- Base styles ---------- */
 html,
 body {
-  @apply bg-white text-gray-950 dark:bg-gray-950 dark:text-white;
-}
-
-[data-theme='dark'] {
-  color-scheme: dark;
+  @apply bg-background text-foreground font-sans antialiased;
 }
