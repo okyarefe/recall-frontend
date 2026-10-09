@@ -39,7 +39,9 @@
   --chart-3: #67e8f9; /* cyan */
   --chart-4: #f0e44a; /* yellow card */
 
-  --radius: 1rem; /* cards */
+  /* Elevation: dark mode needs stronger shadows to be visible at all */
+  --elevation-card: 0 1px 2px rgb(10 10 10 / 0.04), 0 1px 3px rgb(10 10 10 / 0.06);
+  --elevation-float: 0 12px 32px -8px rgb(10 10 10 / 0.18);
 
   color-scheme: light;
 }
@@ -73,6 +75,9 @@
   --chart-2: #fb923c;
   --chart-3: #22d3ee;
   --chart-4: #e5d63a;
+
+  --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.3);
+  --elevation-float: 0 16px 40px -8px rgb(0 0 0 / 0.6);
 
   color-scheme: dark;
 }
@@ -127,8 +132,63 @@
   --color-input: var(--border);
   --color-ring: var(--primary);
 
-  /* Rounded corners like the cards in the design → rounded-card */
-  --radius-card: var(--radius);
+  /* --elevation-card → shadow-card */
+  --shadow-card: var(--elevation-card);
+  --shadow-float: var(--elevation-float);
+}
+
+/* ---------- Scales (same in both themes) ---------- */
+/* `static` emits every variable even if no class uses it, so CSS Modules
+   can always rely on var(--text-title), var(--radius-card), ... */
+@theme static {
+  /* Type: text-display, text-title, ... Each sets size, line height and weight. */
+  --text-display: 2rem; /* page headline */
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 600;
+  --text-title: 1.5rem; /* section/panel headline, big numbers */
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.02em;
+  --text-title--font-weight: 600;
+  --text-heading: 1.125rem; /* card titles */
+  --text-heading--line-height: 1.4;
+  --text-heading--font-weight: 600;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-caption: 0.875rem; /* labels, hints, secondary text */
+  --text-caption--line-height: 1.4;
+  --text-label: 0.75rem; /* chips, badges */
+  --text-label--line-height: 1.33;
+  --text-label--font-weight: 500;
+
+  /* Spacing base: p-4 = 4 × --spacing. Modules use the --space-* aliases below. */
+  --spacing: 0.25rem;
+
+  /* Radius: rounded-card, rounded-panel, rounded-pill */
+  --radius-card: 1rem;
+  --radius-panel: 1.5rem;
+  --radius-pill: 9999px;
+
+  /* Content widths: max-w-form, max-w-narrow, max-w-page */
+  --container-form: 22rem;
+  --container-narrow: 28rem;
+  --container-page: 64rem;
+}
+
+/* Spacing for CSS Modules, on the same 4px scale as Tailwind (--space-6 = p-6).
+   Not in @theme: Tailwind would turn them into classes that clash with p-6. */
+:root {
+  --space-1: calc(var(--spacing) * 1);
+  --space-2: calc(var(--spacing) * 2);
+  --space-3: calc(var(--spacing) * 3);
+  --space-4: calc(var(--spacing) * 4);
+  --space-5: calc(var(--spacing) * 5);
+  --space-6: calc(var(--spacing) * 6);
+  --space-8: calc(var(--spacing) * 8);
+  --space-10: calc(var(--spacing) * 10);
+  --space-12: calc(var(--spacing) * 12);
+  --space-16: calc(var(--spacing) * 16);
+  --space-20: calc(var(--spacing) * 20);
 }
 
 /* Diagonal stripes from the design's chart pills. Color comes from the
