@@ -13,7 +13,9 @@ export function onLoggedOut(listener: () => void): () => void {
   };
 }
 
-function logOut(): void {
+// The session already died on the backend (refresh got 401): no request to
+// make, just drop the token and tell listeners. Not the user-initiated logout().
+function handleSessionExpired(): void {
   clearAccessToken();
   loggedOutListeners.forEach((listener) => listener());
 }
@@ -38,7 +40,7 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   // A throw here (network/5xx) propagates without logging out: state is unknown.
   const newToken = await refresh();
   if (!newToken) {
-    logOut();
+    handleSessionExpired();
     return res;
   }
 
