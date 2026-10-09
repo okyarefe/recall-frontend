@@ -2,33 +2,46 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { onLoggedOut } from '@/shared/api/client';
 import { refresh } from '@/shared/api/tokenStore';
-import { login } from './api';
-import { AuthContext, type AuthStatus } from './useAuth';
+import { getMe, login, type AuthUser } from './api';
+import { AuthContext, type AuthState } from './useAuth';
+
+const LOGGED_OUT: AuthState = { status: 'unauthenticated', user: null };
+
+// The refresh cookie tells us IF we're logged in, /auth/me tells us WHO.
+async function loadSession(): Promise<AuthUser | null> {
+  const token = await refresh();
+  if (!token) return null;
+  return getMe();
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // 'loading' until the startup refresh answers, so ProtectedRoute
+  // 'loading' until the startup session check answers, so ProtectedRoute
   // doesn't redirect to /login before we actually know.
-  const [status, setStatus] = useState<AuthStatus>('loading');
+  const [state, setState] = useState<AuthState>({
+    status: 'loading',
+    user: null,
+  });
 
   useEffect(() => {
-    // App start: the refresh cookie (if any) tells us whether we're logged in.
-    // StrictMode runs this effect twice in dev; both calls share one request
-    // through refresh()'s in-flight promise.
-    refresh()
-      .then((token) => setStatus(token ? 'authenticated' : 'unauthenticated'))
+    // StrictMode runs this effect twice in dev: both runs share one refresh
+    // request through refresh()'s in-flight promise; /auth/me is a plain read.
+    loadSession()
+      .then((user) =>
+        setState(user ? { status: 'authenticated', user } : LOGGED_OUT),
+      )
       .catch((error: unknown) => {
         // Backend unreachable or 5xx: we can't confirm a session, so treat the
         // user as logged out. The cookie is untouched, so a reload can recover.
-        console.error('Startup token refresh failed', error);
-        setStatus('unauthenticated');
+        console.error('Startup session check failed', error);
+        setState(LOGGED_OUT);
       });
 
     // Later: apiFetch calls this when a refresh returns 401 (session is over).
-    return onLoggedOut(() => setStatus('unauthenticated'));
+    return onLoggedOut(() => setState(LOGGED_OUT));
   }, []);
 
-  // New object only when status changes, so consumers don't re-render for nothing.
-  const value = useMemo(() => ({ status, login }), [status]);
+  // New object only when state changes, so consumers don't re-render for nothing.
+  const value = useMemo(() => ({ ...state, login }), [state]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
