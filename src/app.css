@@ -131,6 +131,16 @@
   --radius-card: var(--radius);
 }
 
+/* Diagonal stripes from the design's chart pills. Color comes from the
+   text color, so `bg-hatch text-chart-1` gives purple stripes. */
+@utility bg-hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    currentColor 0 2px,
+    transparent 2px 8px
+  );
+}
+
 /* ---------- Base styles ---------- */
 html,
 body {

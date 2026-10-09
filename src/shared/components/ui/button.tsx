@@ -18,6 +18,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-surface-muted",
         link: "text-primary underline-offset-4 hover:underline",
+        inverse: "bg-inverse text-inverse-foreground hover:bg-inverse/90",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
