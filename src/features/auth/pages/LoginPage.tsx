@@ -31,9 +31,9 @@ export default function LoginPage() {
 
       <aside className={styles.showcase} aria-hidden="true">
         <div className={styles.showcaseText}>
-          <h2 className={styles.showcaseTitle}>Pick up right where you left off.</h2>
+          <h2 className={styles.showcaseTitle}>Turn your notes into quizzes.</h2>
           <p className={styles.showcaseSubtitle}>
-            Everything you were working on, waiting for you.
+            Upload a document. Recall writes the questions.
           </p>
         </div>
         <LoginShowcase />
