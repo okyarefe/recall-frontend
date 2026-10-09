@@ -6,10 +6,10 @@ export function GoogleSignInButton({ onClick }: { onClick: () => void }) {
       variant="inverse"
       size="lg"
       onClick={onClick}
-      className="h-12 w-full rounded-full text-base"
+      className="h-12 w-full rounded-pill text-body"
     >
       {/* Google's brand rules put the G on white, so no theme token here. */}
-      <span className="grid size-7 place-items-center rounded-full bg-white">
+      <span className="grid size-7 place-items-center rounded-pill bg-white">
         <GoogleIcon />
       </span>
       Continue with Google

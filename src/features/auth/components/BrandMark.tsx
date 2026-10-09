@@ -8,11 +8,11 @@ export function BrandMark({ className }: { className?: string }) {
         className="grid size-10 place-items-center rounded-xl bg-primary"
       >
         <span className="flex flex-col gap-1">
-          <span className="h-1.5 w-5 rounded-full bg-primary-foreground" />
-          <span className="h-1.5 w-3 rounded-full bg-primary-foreground/70" />
+          <span className="h-1.5 w-5 rounded-pill bg-primary-foreground" />
+          <span className="h-1.5 w-3 rounded-pill bg-primary-foreground/70" />
         </span>
       </span>
-      <span className="text-lg font-semibold tracking-tight">Recall</span>
+      <span className="text-heading tracking-tight">Recall</span>
     </div>
   );
 }
