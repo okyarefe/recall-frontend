@@ -1,22 +1,24 @@
 import { Outlet } from 'react-router';
 
 import { useAuth, useCurrentUser } from '@/features/auth';
+import { Button } from '@/shared/components/ui/button';
+import styles from './dashboard.module.css';
 
 export default function Dashboard() {
   const user = useCurrentUser();
   const { logout } = useAuth();
 
   return (
-    <div>
-      Welcome to dashboard :D
-      <p className="text-muted-foreground">Signed in as {user.email}</p>
-      <button
-        type="button"
-        onClick={() => void logout()}
-        className="rounded-lg border border-border px-3 py-1.5 hover:bg-surface-muted"
-      >
-        Log out
-      </button>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Dashboard</h1>
+          <p className={styles.subtitle}>Signed in as {user.email}</p>
+        </div>
+        <Button variant="outline" onClick={() => void logout()}>
+          Log out
+        </Button>
+      </header>
       <Outlet />
     </div>
   );
