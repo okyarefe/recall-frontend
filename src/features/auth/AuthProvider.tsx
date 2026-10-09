@@ -1,7 +1,13 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import { onLoggedOut } from '@/shared/api/client';
-import { refresh } from '@/shared/api/tokenStore';
+import { logout as endSession, refresh } from '@/shared/api/tokenStore';
 import { getMe, login, type AuthUser } from './api';
 import { AuthContext, type AuthState } from './useAuth';
 
@@ -40,8 +46,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return onLoggedOut(() => setState(LOGGED_OUT));
   }, []);
 
+  const logout = useCallback(async () => {
+    try {
+      await endSession();
+    } catch (error: unknown) {
+      // Still log out locally: the user asked to leave. Worst case the cookie
+      // survived and a reload signs them back in.
+      console.error('Logout request failed', error);
+    } finally {
+      setState(LOGGED_OUT);
+    }
+  }, []);
+
   // New object only when state changes, so consumers don't re-render for nothing.
-  const value = useMemo(() => ({ ...state, login }), [state]);
+  const value = useMemo(() => ({ ...state, login, logout }), [state, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

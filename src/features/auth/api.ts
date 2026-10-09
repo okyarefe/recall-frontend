@@ -21,7 +21,3 @@ export async function getMe(): Promise<AuthUser | null> {
   if (!res.ok) throw new Error(`GET /auth/me failed with status ${res.status}`);
   return (await res.json()) as AuthUser;
 }
-
-// TODO: logout() once the backend has a logout endpoint. It should call it
-// with credentials: 'include' (so the backend can revoke the refresh token and
-// clear the cookie), then clearAccessToken() and set status to 'unauthenticated'.

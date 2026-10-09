@@ -12,6 +12,7 @@ export type AuthStatus = AuthState['status'];
 
 export type AuthContextValue = AuthState & {
   login: () => void;
+  logout: () => Promise<void>;
 };
 
 // Default is null: calling useAuth() outside <AuthProvider> is a bug,

@@ -34,6 +34,29 @@ export function refresh(): Promise<string | null> {
   return inFlight;
 }
 
+/**
+ * Ends the session on the backend (revokes the refresh token, clears the cookie)
+ * and forgets the access token. Waits for a running refresh and takes the same
+ * lock, so a rotation can't leave a fresh, unrevoked token behind.
+ */
+export async function logout(): Promise<void> {
+  try {
+    await inFlight?.catch(() => {});
+    const res = await withCrossTabLock(() =>
+      fetch(`${env.API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include', // send the cookie, and accept the Set-Cookie that deletes it
+      }),
+    );
+    if (!res.ok) {
+      throw new Error(`Logout failed with status ${res.status}`);
+    }
+  } finally {
+    // The access token is a JWT: the backend can't revoke it, so drop it here.
+    accessToken = null;
+  }
+}
+
 async function requestNewToken(): Promise<string | null> {
   const res = await fetch(`${env.API_URL}/auth/refresh`, {
     method: 'POST',
