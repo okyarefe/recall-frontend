@@ -56,15 +56,20 @@ Only create a folder once something goes in it.
 - Backend sets an httpOnly `refresh_token` cookie (Path=/auth). `POST /auth/refresh` with
   `credentials: 'include'` returns `{ accessToken }` and rotates the cookie.
 - **Refresh tokens are single-use.** Sending one twice logs the user out everywhere. So:
-  - Only `refresh()` in `shared/api/tokenStore.ts` may call `/auth/refresh`.
+  - Only `shared/api/tokenStore.ts` touches the refresh cookie: `refresh()` calls `/auth/refresh`, `logout()` calls `/auth/logout`.
+    tokenStore functions are named after the endpoint they call.
   - `refresh()` shares one in-flight promise. Never put an `await` between the `if (!inFlight)` check and the assignment.
-  - A Web Lock (`navigator.locks`) serializes refreshes across tabs.
+  - A Web Lock (`navigator.locks`) serializes refresh and logout across tabs; `logout()` also waits for a running refresh.
 - The access token lives **in memory only** (`tokenStore.ts`). Never store it in localStorage/sessionStorage or React state.
 - All API calls go through `apiFetch` (`shared/api/client.ts`). Never call `fetch` for the API directly.
   It adds the Bearer header and, on 401, refreshes once and retries once.
 - `refresh()` results: token = logged in; `null` (401) = logged out; throw = unknown (network/5xx), don't log out.
-- React only holds `status` (`'loading' | 'authenticated' | 'unauthenticated'`) in `AuthProvider`.
-  It changes in two places only: the startup refresh and the `onLoggedOut` listener.
+- React only holds `{ status, user }` in `AuthProvider` (`user` exists only when `'authenticated'`).
+  It changes in three places only: the startup session check (`refresh()` then `GET /auth/me`),
+  the `onLoggedOut` listener (session expired), and `logout()` (user-initiated).
+- "logout" always means the user chose to log out (backend call). A session that died on its own is
+  "session expired" (`handleSessionExpired` in `client.ts`, no request).
+- User identity comes from `GET /auth/me`, never from decoding the JWT. Pages behind `ProtectedRoute` use `useCurrentUser()`.
 - `GET /auth/google` is a full-page navigation (`window.location.assign`), never `fetch`.
 - SPA mode still renders the root once at build time in Node: no `window`/`navigator` during render or at module top level. Use effects, or guard with `typeof`.
 - Business rules (credits, limits) are enforced by the backend. The frontend only displays server state.
@@ -91,6 +96,5 @@ Only create a folder once something goes in it.
 
 ## Known TODOs
 
-- Logout: no backend endpoint yet (see TODO in `src/features/auth/api.ts`).
 - `Dockerfile` / `npm start` still expect an SSR server build; SPA mode outputs static files in `build/client/`.
 - Spec places providers in `src/app/providers.tsx`; they currently live in `src/providers/`.
