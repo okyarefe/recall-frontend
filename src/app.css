@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* ---------- Light theme (default) ---------- */
@@ -30,12 +31,15 @@
   --success: #16a34a; /* "+1.5%" text */
   --success-soft: #dcfce7; /* "+1.5%" chip background */
   --danger: #ef4444; /* notification dot */
+  --danger-foreground: #ffffff;
 
   /* Charts & decorative */
   --chart-1: #8b5cf6; /* purple */
   --chart-2: #fdba74; /* orange */
   --chart-3: #67e8f9; /* cyan */
   --chart-4: #f0e44a; /* yellow card */
+
+  --radius: 1rem; /* cards */
 
   color-scheme: light;
 }
@@ -63,6 +67,7 @@
   --success: #4ade80;
   --success-soft: #14301f;
   --danger: #f87171;
+  --danger-foreground: #0b0b0f;
 
   --chart-1: #a78bfa;
   --chart-2: #fb923c;
@@ -100,14 +105,30 @@
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
 
+  /* Names shadcn/ui components expect, mapped onto our tokens.
+     Not mapped: shadcn's `accent` is a subtle hover background, ours is teal.
+     Generated components must use bg-surface-muted for hover instead. */
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--foreground);
+  --color-muted: var(--surface-muted);
+  --color-secondary: var(--surface-muted);
+  --color-secondary-foreground: var(--foreground);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--danger-foreground);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+
   /* Rounded corners like the cards in the design → rounded-card */
-  --radius-card: 1rem;
+  --radius-card: var(--radius);
 }
 
 /* ---------- Base styles ---------- */
