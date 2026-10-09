@@ -25,7 +25,6 @@ const DEFAULT_THEME: Theme = 'dark';
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Start with the default so server and client render the same markup.
   const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
-  console.log('Theme is', theme);
 
   // Runs only in the browser: load the saved theme after mount.
   useEffect(() => {
