@@ -17,22 +17,25 @@ React frontend for a NestJS API. Login is Google only.
 
 Requires `.env` with `VITE_API_URL` (see `.env.example`). The app throws at startup without it.
 
-## Folder structure (feature-based)
+## Folder structure (pages + features)
 
 ```
 src/
 ├── root.tsx              # root route: html shell, <AppProviders>, HydrateFallback
-├── routes.ts             # ALL routes in one place (file paths relative to src/)
+├── routes.ts             # ALL routes in one place: URL → file in pages/
+├── pages/                # every screen (route modules, default export), thin
+│   ├── HomePage.tsx      #   + HomePage.module.css (page layout)
+│   ├── LoginPage.tsx, DashboardPage.tsx, ...
+│   └── layouts/          # layout routes: MarketingLayout, ProtectedLayout
 ├── providers/            # app-wide providers (AppProviders, ThemeProvider)
-├── features/<name>/      # one folder per feature
+├── features/<name>/      # one folder per feature (auth, marketing), no pages
 │   ├── index.ts          # public exports of the feature
 │   ├── api.ts            # all HTTP calls of the feature (via apiFetch)
-│   ├── components/       # UI pieces used inside the feature
-│   ├── hooks/            # logic and state
-│   └── pages/            # route modules (default export), thin
+│   ├── components/       # UI of the feature (Tailwind)
+│   └── hooks/            # logic and state
 ├── shared/               # code used by 2+ features
 │   ├── api/              # tokenStore.ts, client.ts
-│   ├── components/
+│   ├── components/       # BrandMark, ProductShowcase
 │   │   └── ui/           # shadcn/ui components (generated, see Styling)
 │   ├── hooks/
 │   └── utils/            # cn.ts (class merging for components)
@@ -43,15 +46,18 @@ Only create a folder once something goes in it.
 
 ## Structure rules
 
-1. Code lives in its feature. Deleting a feature = deleting its folder.
-2. Dependencies point one way: app → features → shared → config. `shared/` NEVER imports from `features/`.
-   When shared code must reach a feature, expose a subscription (see `onLoggedOut` in `shared/api/client.ts`).
+1. Dependencies point one way: pages → features → shared → config.
+   - Features NEVER import other features. When a section needs another feature's UI, take it as a prop/slot
+     and let the page compose them (e.g. `<Hero action={<AuthCta … />} />`).
+   - `shared/` NEVER imports from `features/`. When shared code must reach a feature, expose a subscription
+     (see `onLoggedOut` in `shared/api/client.ts`).
+2. Pages live in `pages/`, never inside a feature. A page composes features; it holds no logic or HTTP calls.
+   Name pages `XPage.tsx`, layouts `XLayout.tsx`, each with its CSS Module next to it.
 3. Outside a feature, import only from its `index.ts` (`@/features/auth`), never deep paths.
    Inside a feature, use relative imports (`../useAuth`), never its own `index.ts` (avoids circular imports).
-4. Move code to `shared/` only when two features need it. Exception: `shared/components/ui/` (design-system primitives).
-5. Pages stay thin: compose components and hooks. Logic goes in hooks, HTTP calls go in `api.ts`.
+4. Feature code lives in its feature: components, hooks, `api.ts`. Removing a feature = its folder + the pages using it.
+5. Move code to `shared/` only when two features need it. Exception: `shared/components/ui/` (design-system primitives).
 6. Use the `@/` alias (`@/*` → `src/*`) for cross-folder imports.
-7. Route modules (`pages/*`, layouts) are referenced by file path in `routes.ts` and don't need to be in `index.ts`.
 
 ## Auth architecture: invariants, do not break
 
@@ -71,7 +77,7 @@ Only create a folder once something goes in it.
   the `onLoggedOut` listener (session expired), and `logout()` (user-initiated).
 - "logout" always means the user chose to log out (backend call). A session that died on its own is
   "session expired" (`handleSessionExpired` in `client.ts`, no request).
-- User identity comes from `GET /auth/me`, never from decoding the JWT. Pages behind `ProtectedRoute` use `useCurrentUser()`.
+- User identity comes from `GET /auth/me`, never from decoding the JWT. Pages behind `ProtectedLayout` use `useCurrentUser()`.
 - `GET /auth/google` is a full-page navigation (`window.location.assign`), never `fetch`.
 - SPA mode still renders the root once at build time in Node: no `window`/`navigator` during render or at module top level. Use effects, or guard with `typeof`.
 - Business rules (credits, limits) are enforced by the backend. The frontend only displays server state.
@@ -82,7 +88,7 @@ Only create a folder once something goes in it.
 - 2-space indent, single quotes, semicolons, trailing commas.
 - Named exports, except route modules, which `export default` their component.
 - Files: components `PascalCase.tsx`, hooks `useThing.ts`, everything else `camelCase.ts`.
-  A page's CSS Module is named after its page file (`dashboard.module.css`, `LoginPage.module.css`).
+  A page's CSS Module is named after its page file (`DashboardPage.module.css`, `LoginPage.module.css`).
   Exception: `shared/components/ui/` keeps shadcn's lowercase names and code style (double quotes, no semicolons), so the CLI can update them.
 - Import order: external packages, blank line, `@/` imports, then relative imports.
 - Comments explain *why*, not *what*. Keep them short.
@@ -109,12 +115,14 @@ Never hardcode a color, font size, spacing, radius, shadow or width. If no token
 | Spacing | Tailwind scale (`p-6`, `gap-4`) | `var(--space-6)`, `var(--space-4)` (same 4px scale) |
 | Radius | `rounded-card` / `panel` / `pill` | `var(--radius-card)`, ... |
 | Shadow | `shadow-card` / `float` | `var(--elevation-card)`, `var(--elevation-float)` |
-| Width | `max-w-form` / `narrow` / `page` | `var(--container-form)`, ... |
+| Width | `max-w-form` / `narrow` / `content` / `page` | `var(--container-form)`, ... |
+| Page side padding | `px-(--gutter)` | `var(--gutter)` (16px → 24px → 40px as the screen grows) |
 
 - Colors: `bg-background`, `bg-surface`, `bg-surface-muted`, `border-border`, `text-foreground`, `text-muted-foreground`,
   `bg-primary`/`text-primary-foreground`, `bg-primary-soft`, `bg-inverse`/`text-inverse-foreground`, `bg-accent` (teal),
   `text-success`/`bg-success-soft`, `text-danger`, `bg-chart-1..4`. Stripes: `bg-hatch text-chart-1`.
 - Cards: `rounded-card border border-border bg-surface shadow-card`.
+- A bare `border` already uses `--border` (base rule in `app.css`), as shadcn components assume.
 - Theme-dependent tokens (colors, elevation) live in `:root` and `[data-theme='dark']`, mapped in `@theme inline`.
   To add one: both themes + `@theme inline`. Raw and Tailwind names must differ (`--surface` → `--color-surface`), or the variable references itself.
 - Scales (type, radius, widths) live in `@theme static`, so their variables always exist for CSS Modules.
