@@ -27,11 +27,11 @@ export function useAuth(): AuthContextValue {
   return ctx;
 }
 
-// For components behind ProtectedRoute, where a user is guaranteed.
+// For components behind ProtectedLayout, where a user is guaranteed.
 export function useCurrentUser(): AuthUser {
   const auth = useAuth();
   if (auth.status !== 'authenticated') {
-    throw new Error('useCurrentUser must be used behind ProtectedRoute');
+    throw new Error('useCurrentUser must be used behind ProtectedLayout');
   }
   return auth.user;
 }

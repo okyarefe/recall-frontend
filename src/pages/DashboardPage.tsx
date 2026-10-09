@@ -2,9 +2,9 @@ import { Outlet } from 'react-router';
 
 import { useAuth, useCurrentUser } from '@/features/auth';
 import { Button } from '@/shared/components/ui/button';
-import styles from './dashboard.module.css';
+import styles from './DashboardPage.module.css';
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const user = useCurrentUser();
   const { logout } = useAuth();
 

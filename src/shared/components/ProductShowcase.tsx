@@ -10,7 +10,7 @@ const OPTIONS = [
 
 // Decorative only: the page hides it from screen readers.
 // Tells the product story: document in, quiz out, answer traced back to its source.
-export function LoginShowcase() {
+export function ProductShowcase() {
   return (
     <div className="relative w-full max-w-narrow">
       <div className="rounded-card border border-border bg-surface p-6 shadow-card">
@@ -64,12 +64,12 @@ export function LoginShowcase() {
         </div>
       </div>
 
-      <div className="absolute -top-5 -left-6 flex items-center gap-2 rounded-pill bg-accent px-4 py-2 text-caption font-medium text-accent-foreground shadow-float">
+      <div className="absolute -bottom-5 -left-3 flex items-center sm:-top-5 sm:bottom-auto sm:-left-6 gap-2 rounded-pill bg-accent px-4 py-2 text-caption font-medium text-accent-foreground shadow-float">
         <Sparkles className="size-4" />
         12 questions generated
       </div>
 
-      <div className="absolute -top-16 -right-10 w-52 rotate-6 overflow-hidden rounded-card bg-chart-4 p-4 shadow-float">
+      <div className="absolute -top-16 -right-6 w-40 rotate-6 sm:-right-10 sm:w-52 overflow-hidden rounded-card bg-chart-4 p-4 shadow-float">
         <div className="absolute -right-6 -bottom-6 size-20 rounded-pill bg-hatch text-accent-foreground/15" />
         <div className="relative flex flex-col gap-2 text-accent-foreground">
           <div className="flex items-center gap-2">

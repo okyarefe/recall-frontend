@@ -6,15 +6,17 @@ import {
 } from '@react-router/dev/routes';
 
 export default [
-  route('login', './features/auth/pages/LoginPage.tsx'),
+  route('login', './pages/LoginPage.tsx'),
 
   // Everything inside requires login.
-  layout('./features/auth/ProtectedRoute.tsx', [
-    route('dashboard', './dashboard.tsx', [route('about', './about.tsx')]),
+  layout('./pages/layouts/ProtectedLayout.tsx', [
+    route('dashboard', './pages/DashboardPage.tsx', [
+      route('about', './pages/AboutPage.tsx'),
+    ]),
   ]),
 
-  layout('./marketing/layout.tsx', [
-    index('./marketing/home.tsx'),
-    route('contact', './marketing/contact.tsx'),
+  layout('./pages/layouts/MarketingLayout.tsx', [
+    index('./pages/HomePage.tsx'),
+    route('contact', './pages/ContactPage.tsx'),
   ]),
 ] satisfies RouteConfig;

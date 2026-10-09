@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router';
 
-import { useAuth } from './useAuth';
+import { useAuth } from '@/features/auth';
 
 // Layout route: every route nested inside it in routes.ts requires login.
-export default function ProtectedRoute() {
+export default function ProtectedLayout() {
   const { status } = useAuth();
 
   // Startup refresh hasn't answered yet: wait instead of redirecting too early.

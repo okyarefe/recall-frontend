@@ -21,7 +21,7 @@ async function loadSession(): Promise<AuthUser | null> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // 'loading' until the startup session check answers, so ProtectedRoute
+  // 'loading' until the startup session check answers, so ProtectedLayout
   // doesn't redirect to /login before we actually know.
   const [state, setState] = useState<AuthState>({
     status: 'loading',

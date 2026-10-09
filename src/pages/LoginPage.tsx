@@ -1,9 +1,8 @@
-import { Navigate } from 'react-router';
+import { Link, Navigate } from 'react-router';
 
-import { BrandMark } from '../components/BrandMark';
-import { GoogleSignInButton } from '../components/GoogleSignInButton';
-import { LoginShowcase } from '../components/LoginShowcase';
-import { useAuth } from '../useAuth';
+import { GoogleSignInButton, useAuth } from '@/features/auth';
+import { BrandMark } from '@/shared/components/BrandMark';
+import { ProductShowcase } from '@/shared/components/ProductShowcase';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
@@ -18,7 +17,9 @@ export default function LoginPage() {
   return (
     <main className={styles.page}>
       <section className={styles.formSide}>
-        <BrandMark />
+        <Link to="/" className="self-start">
+          <BrandMark />
+        </Link>
         <div className={styles.form}>
           <div>
             <h1 className={styles.title}>Welcome back</h1>
@@ -36,7 +37,7 @@ export default function LoginPage() {
             Upload a document. Recall writes the questions.
           </p>
         </div>
-        <LoginShowcase />
+        <ProductShowcase />
       </aside>
     </main>
   );

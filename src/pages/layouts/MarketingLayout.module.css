@@ -1,0 +1,11 @@
+/* Header, content, footer: the footer stays at the bottom on short pages. */
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.main {
+  flex: 1;
+}
