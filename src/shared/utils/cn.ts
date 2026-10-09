@@ -7,10 +7,10 @@ import { extendTailwindMerge } from 'tailwind-merge';
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      text: ['display', 'title', 'heading', 'body', 'caption', 'label'],
+      text: ['hero', 'display', 'title', 'heading', 'body', 'caption', 'label'],
       radius: ['card', 'panel', 'pill'],
       shadow: ['card', 'float'],
-      container: ['form', 'narrow', 'page'],
+      container: ['form', 'narrow', 'content', 'page'],
     },
   },
 });

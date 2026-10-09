@@ -142,6 +142,10 @@
    can always rely on var(--text-title), var(--radius-card), ... */
 @theme static {
   /* Type: text-display, text-title, ... Each sets size, line height and weight. */
+  --text-hero: 3.5rem; /* landing page headline (desktop) */
+  --text-hero--line-height: 1.05;
+  --text-hero--letter-spacing: -0.03em;
+  --text-hero--font-weight: 600;
   --text-display: 2rem; /* page headline */
   --text-display--line-height: 1.15;
   --text-display--letter-spacing: -0.02em;
@@ -169,10 +173,11 @@
   --radius-panel: 1.5rem;
   --radius-pill: 9999px;
 
-  /* Content widths: max-w-form, max-w-narrow, max-w-page */
+  /* Content widths: max-w-form, max-w-narrow, max-w-content, max-w-page */
   --container-form: 22rem;
   --container-narrow: 28rem;
-  --container-page: 64rem;
+  --container-content: 48rem; /* reading width: FAQ, section intros */
+  --container-page: 80rem;
 }
 
 /* Spacing for CSS Modules, on the same 4px scale as Tailwind (--space-6 = p-6).
@@ -189,6 +194,22 @@
   --space-12: calc(var(--spacing) * 12);
   --space-16: calc(var(--spacing) * 16);
   --space-20: calc(var(--spacing) * 20);
+
+  /* Side padding of page containers; grows with the screen.
+     Tailwind: px-(--gutter). */
+  --gutter: var(--space-4);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: var(--space-6);
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: var(--space-10);
+  }
 }
 
 /* Diagonal stripes from the design's chart pills. Color comes from the
@@ -202,6 +223,16 @@
 }
 
 /* ---------- Base styles ---------- */
+/* A bare `border` uses currentColor in Tailwind v4; default it to the token,
+   as shadcn components expect. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+}
+
 html,
 body {
   @apply bg-background text-foreground font-sans antialiased;
