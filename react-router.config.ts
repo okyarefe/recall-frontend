@@ -1,7 +1,8 @@
 import type { Config } from "@react-router/dev/config";
 
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
-  ssr: true,
+  appDirectory: "src",
+  // SPA mode: auth state lives in the browser (in-memory token + API-scoped
+  // cookie), so a runtime server could never render authenticated pages.
+  ssr: false,
 } satisfies Config;

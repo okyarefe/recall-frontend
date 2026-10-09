@@ -1,4 +1,4 @@
-import { ThemeProvider, useTheme } from '~/providers/ThemeProvider';
+import { useTheme } from '@/providers/ThemeProvider';
 export default function HomePage() {
   const { theme, setTheme, toggleTheme } = useTheme();
   console.log('Theme', theme);

@@ -50,6 +50,11 @@ export default function App() {
   );
 }
 
+// SPA mode: baked into index.html at build time, shown until the JS hydrates.
+export function HydrateFallback() {
+  return <p className="p-4">Loading…</p>;
+}
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
