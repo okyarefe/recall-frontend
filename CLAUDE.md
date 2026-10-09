@@ -96,15 +96,33 @@ Two layers, one set of tokens:
 - **Components use Tailwind** (`components/`, `shared/components/`). Anything reusable (buttons, cards, inputs) is a component.
 - **Pages use CSS Modules** for page layout only (grids, sections, spacing between blocks).
   Put `thing.module.css` next to the page and `import styles from './thing.module.css'`.
-  If a module starts styling buttons or cards, turn that into a component instead.
-- Never hardcode colors. Use the theme tokens from `src/app.css`:
-  - In Tailwind: `bg-background`, `bg-surface`, `bg-surface-muted`, `border-border`, `text-foreground`, `text-muted-foreground`,
-    `bg-primary`/`text-primary-foreground`, `bg-inverse`/`text-inverse-foreground`, `bg-accent`, `text-success`, `text-danger`.
-  - In CSS Modules: the raw variables, `var(--surface)`, `var(--border)`, `var(--muted-foreground)`, `var(--radius)`, ...
-    No `@apply` in modules.
-- Cards: `rounded-card border border-border bg-surface`.
-- Every token has a light and a dark value (`[data-theme='dark']`), so using tokens makes components theme-aware automatically.
-  To add a color, add it to both themes and to `@theme inline` in `app.css`.
+  If a module starts styling buttons or cards, turn that into a component instead. No `@apply` in modules.
+
+### Design tokens (`src/app.css`), the only source of design values
+
+Never hardcode a color, font size, spacing, radius, shadow or width. If no token fits, add one; don't invent a value.
+
+| Kind | Tailwind (components) | CSS Modules (pages) |
+|---|---|---|
+| Color | `bg-surface`, `text-muted-foreground`, `border-border`, `bg-primary`, ... | `var(--surface)`, `var(--muted-foreground)`, ... |
+| Type | `text-display` / `title` / `heading` / `body` / `caption` / `label` | `var(--text-title)` + `--text-title--line-height`, `--letter-spacing`, `--font-weight` |
+| Spacing | Tailwind scale (`p-6`, `gap-4`) | `var(--space-6)`, `var(--space-4)` (same 4px scale) |
+| Radius | `rounded-card` / `panel` / `pill` | `var(--radius-card)`, ... |
+| Shadow | `shadow-card` / `float` | `var(--elevation-card)`, `var(--elevation-float)` |
+| Width | `max-w-form` / `narrow` / `page` | `var(--container-form)`, ... |
+
+- Colors: `bg-background`, `bg-surface`, `bg-surface-muted`, `border-border`, `text-foreground`, `text-muted-foreground`,
+  `bg-primary`/`text-primary-foreground`, `bg-primary-soft`, `bg-inverse`/`text-inverse-foreground`, `bg-accent` (teal),
+  `text-success`/`bg-success-soft`, `text-danger`, `bg-chart-1..4`. Stripes: `bg-hatch text-chart-1`.
+- Cards: `rounded-card border border-border bg-surface shadow-card`.
+- Theme-dependent tokens (colors, elevation) live in `:root` and `[data-theme='dark']`, mapped in `@theme inline`.
+  To add one: both themes + `@theme inline`. Raw and Tailwind names must differ (`--surface` → `--color-surface`), or the variable references itself.
+- Scales (type, radius, widths) live in `@theme static`, so their variables always exist for CSS Modules.
+- New size/radius/shadow/width tokens must also be added to `extendTailwindMerge` in `shared/utils/cn.ts`.
+  Otherwise `cn()` misreads them (e.g. treats `text-body` as a color) and silently drops other classes.
+- Don't reuse names Tailwind already has built in (e.g. `max-w-prose` is 65ch and wins over a token).
+- Exceptions: brand marks (the Google G and its white circle), and per-item data such as chart bar heights via `style`.
+- Media queries can't read variables: use `64rem` (Tailwind `lg`) etc. with a comment.
 
 ### Accessible components (shadcn/ui)
 
