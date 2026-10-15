@@ -5,4 +5,7 @@ export type Entry = {
 
 export type UploadItem =
   | { id: string; file: File; status: 'ready' }
-  | { id: string; file: File; status: 'invalid'; error: string };
+  | { id: string; file: File; status: 'invalid'; error: string }
+  | { id: string; file: File; status: 'uploading' }
+  | { id: string; file: File; status: 'uploaded'; entry: Entry }
+  | { id: string; file: File; status: 'failed'; error: string };
