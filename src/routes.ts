@@ -12,6 +12,7 @@ export default [
   layout('./pages/layouts/ProtectedLayout.tsx', [
     route('dashboard', './pages/DashboardPage.tsx', [
       route('about', './pages/AboutPage.tsx'),
+      route('upload', './pages/UploadPage.tsx'),
     ]),
   ]),
 
