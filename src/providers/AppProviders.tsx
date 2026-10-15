@@ -1,10 +1,13 @@
 import { AuthProvider } from '@/features/auth';
+import { QueryProvider } from './QueryProvider';
 import { ThemeProvider } from './ThemeProvider';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <AuthProvider>{children}</AuthProvider>
+      <QueryProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

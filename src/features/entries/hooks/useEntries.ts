@@ -1,45 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { getEntries } from '../api';
 import type { Entry } from '../types';
 
-type EntriesState =
+export const entriesQueryKey = ['entries'] as const;
+
+type EntriesResult = { retry: () => void } & (
   | { status: 'loading' }
   | { status: 'error'; error: Error }
-  | { status: 'success'; entries: Entry[] };
+  | { status: 'success'; entries: Entry[] }
+);
 
-export function useEntries() {
-  const [state, setState] = useState<EntriesState>({ status: 'loading' });
-  const [attempt, setAttempt] = useState(0);
+export function useEntries(): EntriesResult {
+  const query = useQuery({
+    queryKey: entriesQueryKey,
+    queryFn: ({ signal }) => getEntries(signal),
+  });
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const retry = () => void query.refetch();
 
-    getEntries(controller.signal)
-      .then((entries) => {
-        // TEMP debug: remove before committing.
-        entries.forEach((entry) => console.log(entry.title, entry.content?.slice(0, 100)));
-        setState({ status: 'success', entries });
-      })
-      .catch((error: unknown) => {
-        // Cancelled because the page went away: not a real failure.
-        if (controller.signal.aborted) return;
-        setState({
-          status: 'error',
-          error:
-            error instanceof Error
-              ? error
-              : new Error('Could not load entries'),
-        });
-      });
-
-    return () => controller.abort();
-  }, [attempt]);
-
-  function retry(): void {
-    setState({ status: 'loading' });
-    setAttempt((n) => n + 1);
-  }
-
-  return { ...state, retry };
+  // Same shape as before React Query, so pages don't change.
+  if (query.status === 'pending') return { status: 'loading', retry };
+  if (query.status === 'error') return { status: 'error', error: query.error, retry };
+  return { status: 'success', entries: query.data, retry };
 }

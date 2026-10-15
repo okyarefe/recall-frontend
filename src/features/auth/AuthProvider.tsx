@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useCallback,
   useEffect,
@@ -21,12 +22,20 @@ async function loadSession(): Promise<AuthUser | null> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   // 'loading' until the startup session check answers, so ProtectedLayout
   // doesn't redirect to /login before we actually know.
   const [state, setState] = useState<AuthState>({
     status: 'loading',
     user: null,
   });
+
+  // The query cache holds the previous user's data in memory; drop it so the
+  // next login in this tab can't see it.
+  const signOutLocally = useCallback(() => {
+    queryClient.clear();
+    setState(LOGGED_OUT);
+  }, [queryClient]);
 
   useEffect(() => {
     // StrictMode runs this effect twice in dev: both runs share one refresh
@@ -43,8 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
     // Later: apiFetch calls this when a refresh returns 401 (session is over).
-    return onLoggedOut(() => setState(LOGGED_OUT));
-  }, []);
+    return onLoggedOut(signOutLocally);
+  }, [signOutLocally]);
 
   const logout = useCallback(async () => {
     try {
@@ -54,9 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // survived and a reload signs them back in.
       console.error('Logout request failed', error);
     } finally {
-      setState(LOGGED_OUT);
+      signOutLocally();
     }
-  }, []);
+  }, [signOutLocally]);
 
   // New object only when state changes, so consumers don't re-render for nothing.
   const value = useMemo(() => ({ ...state, login, logout }), [state, logout]);

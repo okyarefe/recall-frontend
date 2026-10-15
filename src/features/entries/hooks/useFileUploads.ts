@@ -1,8 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { uploadEntry } from '../api';
 import type { UploadItem } from '../types';
 import { validateFile } from '../uploadRules';
+import { entriesQueryKey } from './useEntries';
 
 function isSameFile(a: File, b: File): boolean {
   return a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
@@ -13,6 +15,7 @@ function canUpload(item: UploadItem): boolean {
 }
 
 export function useFileUploads() {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<UploadItem[]>([]);
 
   function addFiles(files: File[]): void {
@@ -48,6 +51,8 @@ export function useFileUploads() {
         updateItem(id, { id, file, status: 'failed', error: 'Upload failed. Try again.' });
       }
     }
+    // Once per batch, not per file: one refetch is enough.
+    void queryClient.invalidateQueries({ queryKey: entriesQueryKey });
   }
 
   const uploadableCount = items.filter(canUpload).length;
