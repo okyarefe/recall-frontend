@@ -7,7 +7,7 @@ React frontend for a NestJS API. Login is Google only.
 - React 19, TypeScript (strict), Tailwind CSS v4 (components) + CSS Modules (pages)
 - shadcn/ui on Radix for accessible components (source copied into `shared/components/ui/`)
 - React Router v8 in **framework mode, SPA** (`ssr: false`, `appDirectory: 'src'`)
-- Plain `fetch` through `apiFetch`, React context. No auth libraries.
+- Plain `fetch` through `apiFetch` for HTTP. TanStack Query for server data (cache, refetching). React context for app state. No auth libraries.
 
 ## Commands
 
@@ -27,14 +27,14 @@ src/
 │   ├── HomePage.tsx      #   + HomePage.module.css (page layout)
 │   ├── LoginPage.tsx, DashboardPage.tsx, ...
 │   └── layouts/          # layout routes: MarketingLayout, ProtectedLayout (auth gate), AppLayout (sidebar frame)
-├── providers/            # app-wide providers (AppProviders, ThemeProvider)
+├── providers/            # app-wide providers (AppProviders, ThemeProvider, QueryProvider)
 ├── features/<name>/      # one folder per feature (auth, marketing, entries, app-shell), no pages
 │   ├── index.ts          # public exports of the feature
 │   ├── api.ts            # all HTTP calls of the feature (via apiFetch)
 │   ├── components/       # UI of the feature (Tailwind)
 │   └── hooks/            # logic and state
 ├── shared/               # code used by 2+ features
-│   ├── api/              # tokenStore.ts, client.ts
+│   ├── api/              # tokenStore.ts, client.ts, apiError.ts, queryClient.ts
 │   ├── components/       # BrandMark, ProductShowcase
 │   │   └── ui/           # shadcn/ui components (generated, see Styling)
 │   ├── hooks/
@@ -75,12 +75,28 @@ Only create a folder once something goes in it.
 - React only holds `{ status, user }` in `AuthProvider` (`user` exists only when `'authenticated'`).
   It changes in three places only: the startup session check (`refresh()` then `GET /auth/me`),
   the `onLoggedOut` listener (session expired), and `logout()` (user-initiated).
+  Both logged-out paths go through `signOutLocally`, which also clears the query cache.
 - "logout" always means the user chose to log out (backend call). A session that died on its own is
   "session expired" (`handleSessionExpired` in `client.ts`, no request).
 - User identity comes from `GET /auth/me`, never from decoding the JWT. Pages behind `ProtectedLayout` use `useCurrentUser()`.
 - `GET /auth/google` is a full-page navigation (`window.location.assign`), never `fetch`.
 - SPA mode still renders the root once at build time in Node: no `window`/`navigator` during render or at module top level. Use effects, or guard with `typeof`.
 - Business rules (credits, limits) are enforced by the backend. The frontend only displays server state.
+
+## Server data (TanStack Query)
+
+- One `QueryClient`, created in `shared/api/queryClient.ts` and provided by `QueryProvider`.
+  Inside React get it with `useQueryClient()`; never create another.
+- Each feature's `api.ts` stays plain async functions (no React). On a non-OK response they
+  `throw await toApiError(res)`, so errors carry `status` and the backend's message.
+- Reads use `useQuery` inside a feature hook (e.g. `useEntries`), never directly in a page.
+  The hook returns a feature-shaped result (`{ status, entries, retry }`) so pages don't depend on React Query.
+  Pass the query's `signal` to the api function so leaving the page cancels the request.
+- Query keys are exported constants next to their hook (`entriesQueryKey`), never inline arrays.
+- After a write, invalidate the keys it affected (once per batch, not per item). Use `useMutation` for single
+  actions (delete, rename); a batch that tracks per-item state itself (uploads) uses plain async + `invalidateQueries`.
+- The default `retry` skips 4xx: `apiFetch` already handled 401, and retrying would refresh again with a dead cookie.
+- The cache holds user data in memory: it must be cleared whenever the user is gone (`signOutLocally` in `AuthProvider`).
 
 ## Code style
 
