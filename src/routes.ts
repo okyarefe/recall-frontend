@@ -13,6 +13,7 @@ export default [
     // The app frame: sidebar + content.
     layout('./pages/layouts/AppLayout.tsx', [
       route('dashboard', './pages/DashboardPage.tsx'),
+      route('library', './pages/LibraryPage.tsx'),
       route('upload', './pages/UploadPage.tsx'),
     ]),
   ]),

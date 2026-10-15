@@ -1,4 +1,4 @@
-import { LayoutDashboard, Plus } from 'lucide-react';
+import { LayoutDashboard, Library, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link, NavLink } from 'react-router';
 
@@ -6,7 +6,10 @@ import { BrandMark } from '@/shared/components/BrandMark';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/utils/cn';
 
-const NAV = [{ label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard }];
+const NAV = [
+  { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+  { label: 'Library', to: '/library', icon: Library },
+];
 
 type SidebarNavProps = {
   // The user menu; the layout provides it so app-shell doesn't depend on auth.

@@ -1,0 +1,15 @@
+/* Page layout only. Reusable UI (buttons, cards) belongs in Tailwind components. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--container-content);
+  margin-inline: auto;
+}
+
+.status {
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--muted-foreground);
+}
