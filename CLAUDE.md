@@ -26,9 +26,9 @@ src/
 ├── pages/                # every screen (route modules, default export), thin
 │   ├── HomePage.tsx      #   + HomePage.module.css (page layout)
 │   ├── LoginPage.tsx, DashboardPage.tsx, ...
-│   └── layouts/          # layout routes: MarketingLayout, ProtectedLayout
+│   └── layouts/          # layout routes: MarketingLayout, ProtectedLayout (auth gate), AppLayout (sidebar frame)
 ├── providers/            # app-wide providers (AppProviders, ThemeProvider)
-├── features/<name>/      # one folder per feature (auth, marketing), no pages
+├── features/<name>/      # one folder per feature (auth, marketing, entries, app-shell), no pages
 │   ├── index.ts          # public exports of the feature
 │   ├── api.ts            # all HTTP calls of the feature (via apiFetch)
 │   ├── components/       # UI of the feature (Tailwind)

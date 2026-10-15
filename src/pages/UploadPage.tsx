@@ -1,3 +1,4 @@
+import { PageHeader } from '@/features/app-shell';
 import { FileDropzone, UploadList, useFileUploads } from '@/features/entries';
 import { Button } from '@/shared/components/ui/button';
 import styles from './UploadPage.module.css';
@@ -7,6 +8,7 @@ export default function UploadPage() {
 
   return (
     <div className={styles.page}>
+      <PageHeader title="Upload" description="Add documents. Recall writes the questions." />
       <FileDropzone onFiles={addFiles} />
       <UploadList items={items} onRemove={removeFile} />
       <div className={styles.actions}>

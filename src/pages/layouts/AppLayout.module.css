@@ -1,0 +1,20 @@
+/* Sidebar on the left, page content on the right. Below md the sidebar
+   hides itself and the column's mobile header takes over. */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+/* min-width: 0 lets long content (file names) shrink instead of widening the page. */
+.column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.main {
+  flex: 1;
+  padding: var(--space-8) var(--gutter);
+}
