@@ -43,6 +43,9 @@
   --elevation-card: 0 1px 2px rgb(10 10 10 / 0.04), 0 1px 3px rgb(10 10 10 / 0.06);
   --elevation-float: 0 12px 32px -8px rgb(10 10 10 / 0.18);
 
+  /* Dims the page behind drawers and dialogs */
+  --overlay: rgb(10 10 10 / 0.5);
+
   color-scheme: light;
 }
 
@@ -78,6 +81,8 @@
 
   --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.3);
   --elevation-float: 0 16px 40px -8px rgb(0 0 0 / 0.6);
+
+  --overlay: rgb(0 0 0 / 0.7);
 
   color-scheme: dark;
 }
@@ -116,6 +121,8 @@
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
+
+  --color-overlay: var(--overlay);
 
   /* Names shadcn/ui components expect, mapped onto our tokens.
      Not mapped: shadcn's `accent` is a subtle hover background, ours is teal.
@@ -178,6 +185,7 @@
   --container-narrow: 28rem;
   --container-content: 48rem; /* reading width: FAQ, section intros */
   --container-page: 80rem;
+  --container-sidebar: 16rem; /* app sidebar: w-sidebar */
 }
 
 /* Spacing for CSS Modules, on the same 4px scale as Tailwind (--space-6 = p-6).
